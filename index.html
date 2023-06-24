@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<title>TigerClimb</title>
+
+<!-- Import dependencies for home page -->
+<link href="static/css/bootstrap.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="static/img/favicon.png">
+<link href="static/css/styles.css" rel="stylesheet">
+<link href="static/css/font-awesome.min.css" rel="stylesheet">
+<link href="static/css/animate-custom.css" rel="stylesheet"> 
+<script src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/modernizr.custom.js"></script>
+
+</head>
+
+
+<body data-target="#navbar-main">
+<!-- Fixed navbar -->
+<div class = "navbar-inverse" id="navbar-main"> 
+  <div id = "navbar-color" class="navbar navbar-color navbar-fixed-top">
+    <div class="container-fluid">
+	 
+      <div class="navbar-header">
+	   <div id ="topleft" class="pull-left">
+       TigerClimb
+      <img src="static/img/logotiger.jpg" width="55" height="38" />
+       </div>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav pull-right" id = "light">
+          {% if not current_user.is_authenticated %}
+          <li><a href="#home-section" >Welcome</a></li>
+          <li> <a href="/sections" >Explore the Wall</a></li>
+          <li> <a href="/searchresults" >Search Routes</a></li>
+          <li><a href="/login" >Sign In</a></li>
+          {% else %}
+          <li><a href="#home-section" >Welcome 
+            <span class = "badge bg-warning text-dark py-1 ms-1 fs-3">{{current_user._netid}}</span></a></li>
+            <li> <a href="/sections" >Explore the Wall</a></li>
+            <li> <a href="/searchresults" >Search Routes</a></li>
+            <li> <a href="/profile" >Profile</a></li>
+            {% if current_user._admin%}
+            <li> <a href="/admin" >Admin Dashboard</a></li>
+            {% else %}
+            {% endif %}
+            <li><a href="/logout" >Logout</a></li>
+          {% endif %} 
+        </ul>
+      </div>
+      <!--/.nav-collapse --> 
+    </div>
+    {% include 'flash.html' %}
+  </div>
+</div>
+
+<!-- ==== HEADERWRAP ==== -->
+<div id="home-section">
+<div id="headerwrap" name="home">
+  <header class="clearfix tb"> 
+ <div class="tb-cell text-center">
+  <i class="fa fa-heart-o icon"></i>
+    <h1 m>TigerClimb</h1>
+    <p>Learn more about the Princeton Climbing Wall </p><br>
+    <p>Search by:</p>
+    <div class="row">
+      <div class="col-sm-6">
+        <a href="sections" class="smoothScroll btn btn-lg">Wall Sections</a>
+      </div>
+      <div class="col-sm-6">
+        <a href="searchresults" class="smoothScroll btn btn-lg">Routes</a><br>
+      </div>
+    </div>
+    <!-- TESTING -->
+    <!-- <a id="button" href="admin_public">add route</a> -->
+	</div>
+	</header>
+  </div>
+</div>
+<div class="div-pattern2"></div>
+<!-- /headerwrap --> 
+
+
+<!-- ==== SERVICES ==== -->
+<div id="services" name="services">
+  <div class="container">
+    <div class="row">
+      <h2 class="centered">Mission</h2>
+      <hr>
+      <div class="col-lg-8 col-lg-offset-2">
+        <p class="large">The TigerClimb app seeks to improve the overall experience 
+        of students who participate in the Outdoor Action climbing wall, are part of the climbing team, 
+        and anyone else who climbs the wall. The climbing wall is located in Power Field Stadium and 
+        visited by hundreds of students every week. Our motivation is to increase the accessibility 
+        to new climbers and provide new information to all climbers. New to climbing? Reference
+        <a href="https://docs.google.com/document/d/1WcINd-09mk1nFmAvvT0MQz0qpeNDOINiDrIarNe14sg/edit">
+          Beni's Big Ol' List of Climbing Terms</a>, by Beni Snow '19</p>
+      </div>
+      <div class="col-lg-4 callout"> <i class="fa fa-cubes fa-3x"></i>
+        <h3>Routes</h3>
+        <p>Explore the various routes available to climb.</p>
+      </div>
+      <div class="col-lg-4 callout"> <i class="fa fa-heart fa-3x"></i>
+        <h3>Customize</h3>
+        <p>Favorite and make private comments on routes. </p>
+      </div>
+      <div class="col-lg-4 callout"> <i class="fa fa-comments fa-3x"></i>
+        <h3>Collaborative Rating</h3>
+        <p>See other users rating of routes and hear their climb experience.</p>
+      </div>
+    </div>
+    <!-- row --> 
+  </div>
+</div>
+
+<!-- ==== ABOUT ==== -->]
+<div id="about" name="about">
+  <div class="container">
+    <div class="row white">
+      <h2 class="centered">Our Motive</h2>
+      <hr>
+      <div class="col-md-6"> <img class="img-responsive" src="static/img/about.jpg" align=""> </div>
+      <div class="col-md-6">
+        <h3>Motivation</h3>
+        <p>The Princeton Outdoor Action climbing wall is visited by hundreds of students each semester. 
+          The wall is made of a grid of holes, into which “holds” are dynamically bolted to create set 
+          paths (“routes”). Therein, however, lies an issue: you climb following a set route, but the 
+          routes are poorly documented, creating a barrier of access to the wall. Our product will create 
+          an accessible way to learn more about the wall, find routes, and find route information. At its 
+          core, our product will provide detailed information about each route and a way to search for 
+          and sort routes, and our front page will allow people to visualize the routes and explore them 
+          in an intuitive manner.</p>
+      </div>
+    </div>
+    <!-- row --> 
+  </div>
+</div>
+
+<!-- ==== TEAM MEMBERS ==== -->
+<div id="team" name="team">
+  <div class="container">
+    <div class="row centered">
+      <h2 class="centered">Meet the Team</h2>
+      <hr>
+	   <div class="col-lg-10 col-lg-offset-1 centered">
+		<br/>
+      </div>
+      <div class="col-lg-2 centered"> <img class="img img-circle" src="static/img/team/rivka.png" height="120px" width="120px" alt="">
+        <h4><strong>Rivka Mandelbaum</strong></h4>
+        <p>Role: Backend developer </p>
+        <a href="mailto:rivkam@princeton.edu"><i class="fa fa-envelope"></i></a> </div>
+      <div class="col-lg-3 centered"> <img class="img img-circle" src="static/img/team/hitesha.jpg" height="120px" width="120px" alt="">
+        <h4><b>Hitesha Ukey</b></h4>
+        <p>Role: GUI and <br> frontend developer</p>
+        <a href="mailto:hukey@princeton.edu"><i class="fa fa-envelope"></i></a> </div>
+      <div class="col-lg-2 centered"> <img class="img img-circle" src="static/img/team/mahmudul.jpg" height="120px" width="120px" alt="">
+        <h4><b>Mahmudul Rapi</b></h4>
+        <p>Role: Frontend and server-side developer</p>
+        <a href="mailto:mrapi@princeton.edu"><i class="fa fa-envelope"></i></a> </div>
+      <div class="col-lg-3 centered"> <img class="img img-circle" src="static/img/team/john.jpg" height="120px" width="120px" alt="">
+        <h4><b>John Hart</b></h4>
+        <p>Role: GUI and <br> frontend developer</p>
+        <a href="mailto:jphart@princeton.edu"><i class="fa fa-envelope"></i></a> </div>
+      <div class="col-lg-2 centered"> <img class="img img-circle" src="static/img/team/david.jpg" height="120px" width="120px" alt="">
+        <h4><b>David Weisberg</b></h4>
+        <p>Role: Backend developer</p>
+        <a href="mailto:dw26@princeton.edu"><i class="fa fa-envelope"></i></a> </div>
+    </div>
+  </div>
+  <!-- row --> 
+</div>
+<!-- container --> 
+
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="static/js/jquery.easing.1.3.js"></script> 
+<script type="text/javascript" src="static/js/smoothscroll.js"></script> 
+<script type="text/javascript" src="static/js/custom-scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!-- An interface page for admins to edit an existing route -->
+
+<!DOCTYPE html>
+
+{% include 'imports.html' %}
+
+<html>
+    <head>
+        <title>Admin Saved Edit</title>
+        <!-- moved to styles.css
+        <style>
+        .center-fit {
+            max-width: 100%;
+            max-height: 80vh;
+            margin: auto;
+        }
+        
+        .image {
+             height: 100%;
+             position: relative;
+             border-style: solid;
+             background-repeat: no-repeat;
+            /* height: 800px;
+            width: 600px; */
+            }
+        </style>
+        -->
+    </head>
+    {% include 'navbar.html' %}
+    
+    <body>
+        <div class="centered">
+        <h1>Saved Edit Details for {{name}}</h1>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class = "centered">
+                        <img src="static/img/left_corner.png" class="route_image center-fit">
+                    </div>
+                    <!-- Give admin access to a GUI editor for readjusting holds -->
+                    <a href = "/admin_form" >Edit Route Holds: GUI Editor</a>
+                </div>
+
+                <!-- Pre-fill with already existing route info, then admin changes as needed -->
+                <div class="col-sm-6" >
+                    {% set actionURL = "/submitedit" %}
+                    <form action= {{actionURL}} method = "get">
+                      
+                      <div class="form-group">
+                        <label for="name">Route ID</label>
+                        <input type="text" class="form-control" name = "route_id" value="{{route_id}}" readonly>
+                      </div> 
+                      <div class="form-group">
+                            <label for="name">Route Name</label>
+                            <input type="text" class="form-control" name = "name" value="{{name}}" placeholder="{{name}}">
+                          </div>
+                        <div class="form-group">
+                            <label for="grade">Grade</label>
+                            <input type="text" class="form-control" name = "grade" value="{{grade_str}}" placeholder="{{grade_str}}">
+                          </div>
+                          <div class="form-group">
+                            <label for="tape_col">Tape Color</label>
+                            <input type="text" class="form-control" name="tape_col" value="{{tape_col}}" placeholder="{{tape_col}}">
+                          </div>
+                          <div class="form-group">
+                            <label for="rope">Rope</label>
+                            <input type="number" class="form-control" name="rope" value="{{rope}}" placeholder="{{rope}}">
+                          </div>
+                          <div class="form-group">
+                            <label for="status">Status</label>
+                            <input type="text" class="form-control" name="status" value="{{status}}" placeholder="{{status}}">
+                          </div>
+                          <div class="form-group">
+                            <label for="date">Date Created</label>
+                            <input type="date" class="form-control" name="date" value="{{date}}" placeholder="{{date}}">
+                          </div>
+                          <div class="form-group">
+                            <label for="descrip">Description</label>
+                            <textarea class="form-control" name="descrip" rows="3" placeholder="{{descrip}}">{{descrip}}</textarea>
+                          </div>
+                      </form>
+                </div> 
+            </div>
+        </div>
+    </body>
+</html>

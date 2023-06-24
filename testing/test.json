@@ -1,0 +1,7 @@
+{
+    "RouteCoordinates": {
+        "route1": [100, 200],
+        "route2": [300, 400],
+        "route3": [500, 600]
+        }
+    }

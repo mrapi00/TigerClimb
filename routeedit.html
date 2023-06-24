@@ -1,0 +1,532 @@
+<!-- An interface page for admins to edit an existing route -->
+
+<!DOCTYPE html>
+
+{% include 'imports.html' %}
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+
+<html>
+    <head>
+        <title>Admin Edit</title>
+        <style>
+          .in_route {
+              text-align: center;
+          }
+          .not_in_route {
+              background-color: lightgray;
+          }
+          .fixed {
+              border-style: dashed;
+          }
+          .draggable {
+              border-style: solid;
+          }
+         .bar {
+             position: relative;
+             background-color: lightgray;
+         }
+        </style>
+    </head>
+    {% include 'navbar.html' %}
+    {% include 'flash.html' %}
+    
+    <body>
+        <div class="centered">
+        <h1>Edit Details for {{name}}</h1>
+
+          <div class="container-fluid">
+            <div class="row">
+
+              <div class="col-sm-3">
+                <div class="centered">
+                  <form>
+                    <div class="form-group">
+                      <label for="tape_col"> Tape Color</label>
+                      <select class="custom-select" id="tape_col">
+                        <option value="">Choose a Tape Color</option>
+                        <option value="800080" {% if tape_col=="Purple" %} selected="selected"{% endif %}>Purple</option>
+                        <option value="EE5CA5"{% if tape_col=="Pink" %} selected="selected"{% endif %}>Pink</option>
+                        <option value="E71616"{% if tape_col=="Red" %} selected="selected"{% endif %}>Red</option>
+                        <option value="FF8C00" {% if tape_col=="Orange" %} selected="selected"{% endif %}>Orange</option>
+                        <option value="FFD700"{% if tape_col=="Yellow" %} selected="selected"{% endif %}>Yellow</option>
+                        <option value="32CD32"{% if tape_col=="Lime Green" %} selected="selected"{% endif %}>Lime Green</option>
+                        <option value="2A9D8F"{% if tape_col=="Teal" %} selected="selected"{% endif %}>Teal</option>
+                        <option value="1E67DC"{% if tape_col=="Blue" %} selected="selected"{% endif %}>Blue</option>
+                        <option value="238E23" {% if tape_col=="Green" %} selected="selected"{% endif %}>Green</option>
+                        <option value="8B4513"{% if tape_col=="Brown" %} selected="selected"{% endif %}>Brown</option>
+                        <option value="000000" {% if tape_col=="Black" %} selected="selected"{% endif %}>Black</option>
+                        <option value="F5F5F5"{% if tape_col=="White" %} selected="selected"{% endif %}>White</option>
+                      
+                      </select><br>
+                    </div>
+
+                    <div class="form-group" id="section_input">
+                      <label>Section</label>
+                    </div>
+                  </form>
+                  <br>
+                  <h3>How to Map Holds:</h3>
+                  <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">"Add" Holds Mode</h5>
+                      </div>
+                      <p class="mb-1">Double click to add new holds.<br>Click any hold to include or exclude it from the route.</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">"Delete" Holds Mode</h5>
+                      </div>
+                      <p class="mb-1">Double click any hold to remove it permanently from this section.</p>
+                    </a>
+                  </div>
+
+                  <br>
+                  <h5>Switch Editing Mode</h4>
+                  <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="btnradio1">Add</label>
+                  
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio2">Delete</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-5">
+                  <div class = "centered">
+                    <figure class="figure">
+                      <div class="frame" id="frame">
+                        <div id="frame_existing"></div>
+                        <div id="frame_new"></div>
+                      </div>
+                  </figure>
+                  </div>
+              </div>
+
+              <!-- Pre-fill with already existing route info, then admin changes as needed -->
+              <div class="col-sm-4" >
+                  <form>
+                    <div class="form-group">
+                      <label for="name">Route ID</label>
+                      <input type="text" class="form-control" id = "route_id" value="{{route_id}}" readonly>
+                    </div> 
+                    <div class="form-group">
+                      <label for="name">Route Name</label>
+                      <input type="text" class="form-control" id = "name" value="{{name}}" placeholder="{{name}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="grade">Grade</label>
+                      <svg xmlns="https://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-square-fill text-primary" viewBox="0 0 16 20" data-toggle="tooltip" title="Grade must start with '5'." data-placement="bottom">
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                        </svg>
+                      <input type="text" class="form-control" id = "grade" value="{{grade_str}}" placeholder="{{grade_str}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="rope">Rope</label>
+                      <svg xmlns="https://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-square-fill text-primary" viewBox="0 0 16 20" data-toggle="tooltip" title="Must be between 1 and 13." data-placement="bottom">
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                        </svg>
+                      <input type="number" class="form-control" id="rope" value="{{rope}}" placeholder="{{rope}}">
+                    </div>
+                    <div class="form-group">
+                      <label for="status"> Status</label>
+                      <select class="form-control custom-select" id="status">
+                          <option value="Up" {% if status=="Up" %} selected="selected"{% endif %}>Up</option>
+                          <option value="Down"{% if status=="Down" %} selected="selected"{% endif %}>Down</option>
+                          <option value="In-Progress"{% if status=="In-Progress" %} selected="selected"{% endif %}>In-Progress</option>
+                      </select><br>
+                    </div>
+                        <!--
+                        <div class="form-group">
+                          <label for="status">Status</label>
+                          <input type="text" class="form-control" name="status" value="{{status}}" placeholder="{{status}}">
+                        </div>
+                        -->
+                        <div class="form-group">
+                          <label for="date">Date Created</label>
+                          <input type="date" class="form-control" id="date" value="{{date}}" placeholder="{{date}}">
+                        </div>
+                        <div class="form-group">
+                          <label for="descrip">Description</label>
+                          <textarea class="form-control" id="descrip" rows="3" placeholder="{{descrip}}">{{descrip}}</textarea>
+                        </div>
+                        
+                        <input class="btn btn-primary" value="Submit Edits" id="submit" readonly>
+                    </form>
+                    <br>
+              </div> 
+            </div>
+          </div>
+        </div>
+        <script>
+          // add the real js code here
+
+          // applies tape color to holds, filling in with that color
+          function apply_tape_col()
+          {
+            let tape_col = $('#tape_col').val();
+            $('.in_route').css({'box-shadow': "0 0 10px #"+tape_col,
+                                'background-color': '#'+tape_col});
+          }
+
+          // applies or removes HTML classes
+          function add_to_route(hold_id)
+          {
+            $('#'+hold_id).removeClass('not_in_route');
+            $('#'+hold_id).addClass('in_route');
+
+            apply_tape_col();
+          }
+
+          function remove_from_route(hold_id)
+          {
+            $('#'+hold_id).removeClass('in_route');
+            $('#'+hold_id).addClass('not_in_route');
+
+            $('.not_in_route').css({'box-shadow': "0 0 0px",
+                                'background-color': 'lightgray'});
+          }
+
+          // for toggling between putting a generic sectional hold, or in-route hold
+          function switch_inclusion(hold_id)
+          {
+            if ($('#'+hold_id).hasClass('in_route'))
+            {
+              remove_from_route(hold_id);
+            }
+            else if ($('#'+hold_id).hasClass('not_in_route'))
+            {
+              add_to_route(hold_id);
+            }
+          }
+
+          // use jQuery and jQUery UI for adding hold mechanism
+          var num_new = 0;
+          function add_hold(e)
+          {
+            num_new += 1;
+
+            let framex = $('#frame').offset().left;
+            let framey = $('#frame').offset().top;
+            let width = $('#frame').width()
+            let height = $('#frame').height()
+            let x = e.pageX;
+            let y = e.pageY;
+
+            let x_percent = ((x-framex)/width*100).toFixed(4)-1.3;
+            let y_percent = ((y-framey)/height*100).toFixed(4)-0.975;
+            // console.log(x_percent, y_percent)
+
+            let new_id = 'new_' + String(num_new);
+            $('#frame_new').append('<div class="hold new in_route" id="' + new_id + '"></div>');
+            $('#' + new_id).css({ left: String(x_percent)+'%', top: String(y_percent)+'%'});
+            $('#' + new_id).draggable({
+                containment:"#frame",
+                stop: function() {
+                x = $('#' + new_id).position().left;
+                y = $('#' + new_id).position().top;
+
+                let x_percent = (x/width*100).toFixed(4);
+                let y_percent = (y/height*100).toFixed(4);
+                $('#' + new_id).css({ left: String(x_percent)+'%', top: String(y_percent)+'%'});
+                }
+            });
+            $('#' + new_id).on('click', function() {switch_inclusion(new_id);});
+            // console.log('created hold');
+
+            apply_tape_col();
+          }
+
+          // functionality when on add mode (default)
+          var delete_holds_mode = false;
+          function add_mode() 
+          {
+            delete_holds_mode = false;
+            $('#frame').on('dblclick', function(e){add_hold(e)});
+
+            let new_holds = $('#frame_new').children();
+            for(let i = 0; i < new_holds.length; i++)
+            {
+              let child = new_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).draggable('enable');
+              $('#'+key).off('dblclick');
+              $('#'+key).on('click', function() {switch_inclusion(key)});
+              console.log(key);
+            }
+            let old_holds = $('#frame_existing').children();
+            for(let i = 0; i < old_holds.length; i++)
+            {
+              let child = old_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).off('dblclick');
+              $('#'+key).on('click', function() {switch_inclusion(key)});
+              console.log(key);
+            }
+          }
+
+          var deleted = [];
+          // functionality when on delete mode
+          function delete_hold(hold_id)
+          {
+            if ($('#'+hold_id).hasClass('fixed'))
+            {
+              deleted.push(hold_id);
+            }
+            $('#'+hold_id).remove();
+          }
+
+          function delete_mode()
+          {
+            delete_holds_mode = true;
+            $('#frame').off('dblclick');
+
+            let new_holds = $('#frame_new').children();
+            for(let i = 0; i < new_holds.length; i++)
+            {
+              let child = new_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).draggable('disable');
+              $('#'+key).off('click');
+              $('#'+key).on('dblclick', function() {delete_hold(key)});
+              console.log(key);
+            }
+            let old_holds = $('#frame_existing').children();
+            for(let i = 0; i < old_holds.length; i++)
+            {
+              let child = old_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).off('click');
+              $('#'+key).on('dblclick', function() {delete_hold(key)});
+              console.log(key);
+            }
+          }
+          
+          function handleResponse(response)
+          {
+            window.location.reload();
+          }
+
+        // on submit, send data back to flask server using JSON
+        let request = null;
+
+        function send_data() 
+        {
+          var json = {};
+
+          json['route_id'] = $('#route_id').val();
+          json['name'] = $('#name').val();
+          json['grade'] = $('#grade').val();
+          json['tape_col'] = $('#tape_col :selected').text();
+          json['rope'] = $('#rope').val();
+          json['status'] = $('#status').val();
+          json['date'] = $('#date').val();
+          json['descrip'] = $('#descrip').val();
+          json['section'] = $('#section').val();
+
+          let width = $('#frame').width()
+          let height = $('#frame').height()
+
+          let new_holds = $('#frame_new').children();
+          var new_coords = [];
+          for(let i = 0; i < new_holds.length; i++)
+          {
+              let child = new_holds.eq(i);
+              let id = child.attr('id');
+
+              let x = (child.position().left/width * 100).toFixed(4);
+              let y = (child.position().top/height * 100).toFixed(4);
+
+              if ($('#'+id).hasClass('in_route'))
+              {
+                var inclusion = true;
+              }
+              else if ($('#'+id).hasClass('not_in_route'))
+              {
+                var inclusion = false;
+              }
+              // internal test?
+
+              const coord = [x, y, inclusion];
+              console.log(coord);
+              new_coords.push(coord);
+          }
+          json['new_coords'] = new_coords;
+
+          let old_holds = $('#frame_existing').children();
+          var old_coords = [];
+          for(let i = 0; i < old_holds.length; i++)
+          {
+              let child = old_holds.eq(i);
+              let id = child.attr('id');
+
+              if ($('#'+id).hasClass('in_route'))
+              {
+                var inclusion = true;
+              }
+              else if ($('#'+id).hasClass('not_in_route'))
+              {
+                var inclusion = false;
+              }
+              // internal test?
+            
+              const coord = [id, inclusion];
+              old_coords.push(coord);
+          }
+          json['old_ids'] = old_coords;
+
+          json['deleted'] = deleted;
+
+          let url = '/submitedit'
+          
+          if (request != null)
+              request.abort();
+
+          request = $.ajax(
+              {
+                  type: 'POST',
+                  url: url,
+                  data: JSON.stringify(json),
+                  contentType: 'application/JSON',
+                  success: handleResponse
+              }
+          );
+        }
+
+        function handleNewSection(response)
+        {
+          let section = response['section'];
+          let holds = response['section_holds'];
+
+          $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+
+          holds.forEach(hold => {
+                  // console.log(hold[0] + ',' + hold[1]);
+                  $('#frame_existing').append('<div class="hold not_in_route fixed" id="' + hold[2]
+                      + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                  $('#'+hold[2]).click(function() {switch_inclusion(hold[2])});
+              });
+        }
+
+        let requestNewSection = null;
+
+        function getNewData(section)
+        {
+          let url = '/adminnewimage?section=' + section;
+
+          if (requestNewSection != null)
+                    requestNewSection.abort();
+                
+                requestNewSection = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    dataType: 'json',
+                    success: handleNewSection
+                });
+        }
+
+            function handleImageResponse(response)
+          {
+              let section = response['section'];
+              let route_holds = response['route_holds'];
+              let section_holds = response['section_holds'];
+
+              if (section == null || section == "choose_section")
+              {
+                $('#frame').append('<br><br><p>Route is not mapped to the wall yet.');
+                $('#frame').append('Choose a section to start mapping holds.</p>');
+                $('#section_input').append(`<select class="custom-select" id="section">
+                                            <option selected>Choose section</option>
+                                            <option value="the_roof">The Roof</option>
+                                            <option value="main_wall">Main Wall</option>
+                                            <option value="left_wall">Left Wall</option>
+                                            <option value="right_crack">Right Crack</option>
+                                            <option value="desk_wall">Desk Wall</option>
+                                            </select>`);
+              }
+              else
+              {
+                $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+                // do what dora said with not having 'the_roof'
+                var words = section.split("_");
+                // capitalize the letters the ->The, roof -> Roof
+                for (let i = 0; i < words.length; i++) {
+                    words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+                }
+                // create The Roof
+                newSectionStr = words.join(" ");
+                $('#section_input').append('<input type="text" class="form-control" id="section" value="'+ newSectionStr +'" readonly>');
+                }
+
+              $('#section').on('change', function() {
+                // if (confirm('Testing!'))
+                // {
+                  $('#frame').empty();
+                  $('#frame').append('<div id="frame_existing"></div><div id="frame_new"></div>');
+                  let section = $('#section').val();
+                  getNewData(section);
+                // }
+              })
+
+              $('#tape_col').on('change', apply_tape_col);
+
+              section_holds.forEach(hold => {
+                  // console.log(hold[1] + ',' + hold[2]);
+                  if (route_holds.includes(hold[2])) {
+                      $('#frame_existing').append('<div class="hold in_route fixed" id="' + hold[2]
+                          + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                  }
+                  else {
+                      $('#frame_existing').append('<div class="hold not_in_route fixed" id="' + hold[2]
+                          + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                  }
+                  $('#'+hold[2]).click(function() {switch_inclusion(hold[2])});
+              });
+
+              apply_tape_col();
+          }
+
+          function getData(route_id)
+          {
+              // console.log('route_id');
+              let url = '/routeimage' + '?route_id=' + String(route_id);
+
+              if (request != null)
+                  request.abort();
+
+              request = $.ajax({
+                  type:'GET',
+                  url: url,
+                  dataType: 'json',
+                  success: handleImageResponse
+              });
+          }
+          
+          // ensure that rope number always between 1 and 13
+          function makeRopeRobust() {
+              var n = $('#rope').val();
+              if (n < 0)
+                $('#rope').val(1);
+              if (n > 13)
+                $('#rope').val(13);
+          }
+
+          function setup() {
+            add_mode();
+            $('#btnradio1').on('click', add_mode);
+            $('#btnradio2').on('click', delete_mode);
+            getData($('#route_id').val());
+            $('#submit').on('click', send_data);
+            $('#rope').on('input', makeRopeRobust);
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+            })
+          }
+          $('document').ready(setup);
+          
+        </script>
+    </body>
+</html>

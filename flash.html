@@ -1,0 +1,9 @@
+<!-- Displays flash messages to make users aware of actions -->
+{% if get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible show" role="alert">
+  {% for message in get_flashed_messages() %}
+  {{ message }}
+  <br>
+  {% endfor %}
+</div>
+{% endif %}

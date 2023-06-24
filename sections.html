@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+{% include 'imports.html' %}
+<html>
+    <head>
+        <title>Wall Sections</title>
+        <style>
+            table thead {
+                position:sticky;
+                top:0;
+                background-color:white;
+            }
+            .in_route {
+                visibility: visible;
+            }
+            .not_in_route {
+                visibility: hidden;
+                background-color: lightgray;
+            }
+        </style>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% include 'flash.html' %}
+        <div class="centered">
+            <h1>Explore Wall Sections!</h1>
+        </div><br>
+        <div class="row" id="sections">
+            <div class="col-sm">
+                <!-- <button class="btn btn-block" id="left_wall" style="background-color:orange"><strong>Left Wall</strong></button> -->
+                <div class="centered">
+                    <input type="radio" class="btn-check" name="sections" id="left_wall" checked>
+                    <label class="btn btn-outline-secondary" for="left_wall"><strong>Left Wall</strong></label>
+                </div>
+            </div>
+            <div class="col-sm">
+                <!-- <button class="btn btn-block" id="" style="background-color:orange"></button> -->
+                <div class="centered">
+                    <input type="radio" class="btn-check" name="sections" id="the_roof">
+                    <label class="btn btn-outline-secondary" for="the_roof"><strong>The Roof</strong></label>
+                </div>
+            </div>
+            <div class="col-sm">
+                <!-- <button class="btn btn-block" id="main_wall" style="background-color:orange"></button> -->
+                <div class="centered">
+                    <input type="radio" class="btn-check" name="sections" id="main_wall">
+                    <label class="btn btn-outline-secondary" for="main_wall"><strong>Main Wall</strong></label>
+                </div>
+            </div>
+            <div class="col-sm">
+                <!-- <button class="btn btn-block" id="right_crack" style="background-color:orange"></button> -->
+                <div class="centered">
+                    <input type="radio" class="btn-check" name="sections" id="right_crack">
+                    <label class="btn btn-outline-secondary" for="right_crack"><strong>Right Crack</strong></label>
+                </div>
+            </div>
+            <div class="col-sm">
+                <!-- <button class="btn btn-block" id="desk_wall" style="background-color:orange"></button> -->
+                <div class="centered">
+                    <input type="radio" class="btn-check" name="sections" id="desk_wall">
+                    <label class="btn btn-outline-secondary" for="desk_wall"><strong>Desk Wall</strong></label>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="centered">
+                        <figure class="figure">
+                            <div class="frame" id="frame">
+                            </div>
+                        </figure>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="btnradio" id="route_only">
+                            <label class="btn btn-outline-primary" for="route_only">Show Only Route Holds</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="section_all" checked>
+                            <label class="btn btn-outline-primary" for="section_all">Show All Holds</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <table class = "table thread-dark centeredTable" id = "Results">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        'use strict';
+
+        function apply_tape_col(tape_col)
+        {
+            $('.in_route').css({'box-shadow': "0 0 10px #"+tape_col,
+                                'background-color': '#'+tape_col});
+            $('.not_in_route').css({'box-shadow': "0 0 0px",
+                                'background-color': 'lightgray'});
+        }
+
+        var show_all = true;
+        function disp_only_route()
+        {
+            show_all = false;
+            $('.not_in_route').css({"visibility": "hidden"});
+        }
+        function disp_collection()
+        {
+            show_all = true;
+            $('.not_in_route').css({"visibility": "visible"});
+        }
+        function handleResponse(response) {
+            $('#Results').html(response);
+            let children = $('#body').children();
+            for (let i = 0; i < children.length; i++)
+            {
+                let child = children[i]
+                let route_id = child.id
+                $('#title_' + route_id).on('mouseenter', function() {getData(route_id);});
+            }
+            // NEW
+            $('#Results').DataTable({
+                'sDom': 'ltipr',
+                destroy:true,
+                "scrollY":"600px",
+                "scrollCollapse": true,
+                "paging":false
+            });
+        }
+        let request = null;
+        function getRoutes(section) 
+        {
+            section = encodeURIComponent(section);
+            
+            let url = '/section_routes' + '?section=' + section
+            if (request != null)
+                request.abort();
+            request = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    success: handleResponse
+                });
+        }
+        function handleImageResponse(response)
+        {
+            let section = response['section']
+            let tape_col = response['tape_col']
+            let route_holds = response['route_holds'];
+            let section_holds = response['section_holds']
+            section_holds.forEach(hold => {
+                let hold_id = hold[2];
+                if (route_holds.includes(hold_id)) {
+                    $('#'+hold_id).removeClass('not_in_route');
+                    $('#'+hold_id).addClass('in_route');
+                }
+                else {
+                    $('#'+hold_id).removeClass('in_route');
+                    $('#'+hold_id).addClass('not_in_route');
+                }
+                $('.in_route').css({"visibility": "visible"});
+                $('.not_in_route').css({"visibility": "hidden"});
+            });
+
+            if (show_all) {
+                disp_collection();
+            }
+
+            apply_tape_col(tape_col);
+        }
+        function getData(route_id)
+        {
+            let url = '/routeimage' + '?route_id=' + String(route_id);
+            if (request != null)
+                request.abort();
+            request = $.ajax({
+                type:'GET',
+                url: url,
+                dataType: 'json',
+                success: handleImageResponse
+            });
+        }
+
+        function handleSectionImage(response)
+        {
+            let section = response['section'];
+            let holds = response['section_holds'];
+
+            $('#frame').empty();
+            $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">');
+
+            holds.forEach(hold => {
+                // console.log(hold[0] + ',' + hold[1]);
+                $('#frame').append('<div class="hold not_in_route" id="' + hold[2]
+                    + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+            });
+
+            if (show_all) {
+                disp_collection();
+            }
+        }
+
+        let requestSection = null;
+
+        function getSectionImage(section)
+        {
+            let url = '/adminnewimage?section=' + section;
+
+            if (requestSection != null)
+                    requestSection.abort();
+                
+            requestSection = $.ajax(
+            {
+                type: 'GET',
+                url: url,
+                dataType: 'json',
+                success: handleSectionImage
+            });
+        }
+
+        function setupButtons()
+        {
+            let sections = ['left_wall','the_roof','main_wall','right_crack','desk_wall'];
+            sections.forEach(section => {
+                $('#'+section).on('click', function() {
+                    getRoutes(section);
+                    getSectionImage(section);
+                ;})
+            });
+        }
+
+        function setup() {
+            setupButtons();
+            getRoutes('left_wall');
+            getSectionImage('left_wall');
+            getRoutes('left_wall')
+            $('#hello').on('mouseover', function() {getData(0);});
+            $('#route_only').on('click', disp_only_route);
+            $('#section_all').on('click', disp_collection);
+            $('#section_all').click();
+        }
+        $('document').ready(setup);
+    </script>
+</html>

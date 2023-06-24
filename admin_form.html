@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+{% include 'imports.html' %}
+<!-- Imports from GUI team -->
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+
+
+<html>
+    <head>
+        <title>Admin Form</title>
+        <style>
+            .in_route {
+                border-style: solid;
+            }
+            .not_in_route {
+                background-color: lightgray;
+            }
+            .fixed {
+                border-style: dashed;
+            }
+            .draggable {
+                border-style: solid;
+            }
+            .hold1 {
+                background-color: red;
+            }
+            .hold2 {
+                background-color: green;
+            }
+            .hold3 {
+                background-color: blue
+            }
+           .bar {
+               position: relative;
+               background-color: lightgray;
+           }
+            
+        </style>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% include 'flash.html' %}
+
+        <div class="centered">
+            <h1>Edit Holds</h1>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3">
+                    <p>Placeholder</p>
+                </div>
+                <div class="col-sm-6">
+                    <div class="centered">
+                        <figure class="figure">
+                            <div class="frame" id="frame">
+                                <!-- <img src="static/img/left_corner.png" class="center-fit"> -->
+                                <div id="frame_new"></div>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="centered">
+                        <figure class="figure">
+                            <div class="bar">
+                                <img src="static/img/bar.png">
+                                <div class="hold" id="template_hold1" style="background-color:red; top:25%;"></div>
+                                <div class="hold" id="template_hold2" style="background-color:green; top:50%"></div>
+                                <div class="hold" id="template_hold3" style="background-color:blue; top:75%"></div>
+                            </div>  
+                        </figure>
+                        <br><br>
+                        <!-- DOESNT WORK YET -->
+                        <button id="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="route_id" class="invisible">{{route_id}}</div>
+    </body>
+
+    <script>
+        'use strict';
+
+        var hold_type = "hold1";
+        var num_new = 0;
+
+        $('#frame').dblclick( function(e){
+            num_new += 1;
+
+            let x = $(this).offset().left;
+            let y = $(this).offset().top;
+            let width = $(this).width()
+            let height = $(this).height()
+            let framex = e.pageX;
+            let framey = e.pageY;
+
+            let x_percent = ((framex-x)/width*100).toFixed(4)-2;
+            let y_percent = ((framey-y)/height*100).toFixed(4)-1.5;
+            // console.log(x_percent, y_percent)
+
+            let new_id = 'test' + String(num_new);
+            $('#frame_new').append('<div class="hold new in_route" id="' + new_id + '"></div>');
+            $('#' + new_id).css({ left: String(x_percent)+'%', top: String(y_percent)+'%'});
+            $('#' + new_id).draggable({
+                containment:"#frame"
+            });
+            console.log('created hold');
+
+            let tape_col = 'orchid';
+            $('.in_route').css({'box-shadow': "0 0 10px "+tape_col,
+                                'background-color': tape_col});
+        });
+
+        function add_to_route(hold_id)
+        {
+            $('#'+hold_id).removeClass('not_in_route');
+            $('#'+hold_id).addClass('in_route');
+            $('#'+hold_id).detach().appendTo("#frame_new");
+
+            let tape_col = 'orchid';
+            $('.in_route').css({'box-shadow': "0 0 10px "+tape_col,
+                                'background-color': tape_col});
+        }
+
+        // NEEDED function remove_from_route(hold_id)
+
+        function handleResponse(response)
+        {
+            window.location.reload();
+        }
+
+        var request = null;
+
+        function send_routes() {
+
+            let holds = $('#frame_new').children();
+            console.log(holds.length)
+
+            let width = $('#frame').width()
+            let height = $('#frame').height()
+
+            var coords = {};
+            for(let i = 0; i < holds.length; i++)
+            {
+                console.log('sending hold');
+                // var key = String(holds[i].id);
+                let key = 'new_' + String(i);
+                let child = holds.eq(i);
+                // console.log(typeof child);
+
+                let x = (child.position().left/width * 100).toFixed(4);
+                let y = (child.position().top/height * 100).toFixed(4);
+
+                const coord = [x, y];
+                coords[key] = coord;
+            }
+            console.log(coords)
+            
+            let url = '/save_holds'
+            
+            if (request != null)
+                request.abort();
+
+            request = $.ajax(
+                {
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(coords),
+                    contentType: 'application/JSON',
+                    success: handleResponse
+                }
+            );
+        }
+
+        function handleImageResponse(response)
+        {
+            let section = response['section'];
+            let route_holds = response['route_holds'];
+            let section_holds = response['section_holds'];
+
+            $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+
+            section_holds.forEach(hold => {
+                console.log(hold[1] + ',' + hold[2]);
+                if (route_holds.includes(hold[0])) {
+                    $('#frame').append('<div class="hold in_route fixed" id="' + hold[0]
+                        + '" style="left: '+ hold[1] + '%; top:' + hold[2] + '%"></div>');
+                }
+                else {
+                    $('#frame').append('<div class="hold not_in_route fixed" id="' + hold[0]
+                        + '" style="left: '+ hold[1] + '%; top:' + hold[2] + '%"></div>');
+                    $('#'+hold[0]).click(function() {add_to_route(hold[0])});
+                }
+            });
+
+            // let tape_col = $('#tape_col').text();
+            let tape_col = 'orchid';
+            $('.in_route').css({'box-shadow': "0 0 10px "+tape_col,
+                                'background-color': tape_col});
+        }
+
+        function getData(route_id)
+        {
+            console.log('route_id');
+            let url = '/routeimage' + '?route_id=' + String(route_id);
+
+            if (request != null)
+                request.abort();
+
+            request = $.ajax({
+                type:'GET',
+                url: url,
+                dataType: 'json',
+                success: handleImageResponse
+            });
+        }
+
+        function setup() {
+            getData($('#route_id').text());
+            $('#template_hold1').on('click', function(){
+                console.log('update type to 1')
+                hold_type = "hold1";
+            });
+            $('#template_hold2').on('click', function(){
+                hold_type = "hold2";
+            });
+            $('#template_hold3').on('click', function(){
+                hold_type = "hold3";
+            });
+            $('#submit').on('click', send_routes);
+        }
+        $('document').ready(setup);
+    </script>
+</html>

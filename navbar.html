@@ -1,0 +1,51 @@
+<!-- needed style for preventing immediate close of navbar-->
+<style>
+    .navbar-collapse.in {
+    display: block !important;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-warning">
+        <strong><a class="navbar-brand" href="/">TigerClimb</a></strong>
+        <img src="static/img/logotiger.jpg" width="55" height="38" />
+       </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto topnav">
+                <li class="nav-item {{home_active}}">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item {{sections_active}}">
+                    <a class="nav-link" href="/sections">Explore the Wall</a>
+                </li>
+                <li class="nav-item {{route_active}}">
+                    <a class="nav-link" href="/searchresults">Search Routes</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link {{profile_active}}" href="/profile">Profile</a>
+                </li>
+                {% endif %}
+                {% if current_user._admin %}
+                <li class="nav-item">
+                    <a class="nav-link {{admin_active}}" href="/admin">Admin</a>
+                </li>
+                {% endif %}
+                
+                {% if not current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-primary text-white" href="/login">Sign In</a>                  
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-primary text-white" href="/logout" >Logout {{current_user.get_id()}}</a>                  
+                </li>
+                {% endif %}
+                
+            </ul>
+        </div>
+    </nav>
+    

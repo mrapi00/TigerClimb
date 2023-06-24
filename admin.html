@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- Page for admin priveledges, adjusting and adding new routes -->
+{% include 'imports.html' %}
+
+<html>
+    <head>
+        <title>Admin</title>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% include 'flash.html' %}
+        <div class = "centered">
+          <h1>Admin Dashboard</h1>
+        </div>
+        <div class="bg-white border rounded-5 table-responsives">
+    
+            <section class="w-19 p-4">
+              <table class="table table-bordered mx-auto w-auto mb-0 bg-white">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Admin Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <a href="/admin_add">Add New Route </a> 
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <a href="/admin_editroutes">Edit Existing Route</a> 
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center text-danger">
+                        <a href="/admin_deleteroutes">Delete Route</a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+
+    </body>
+</html>

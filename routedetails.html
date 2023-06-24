@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!-- Import different version of boostrap (for private to show properly) -->
+<link rel="icon" type="image/x-icon" href="static/img/favicon.png">
+<link href="static/css/styles.css" rel="stylesheet">
+<link href="static/css/font-awesome.min.css" rel="stylesheet">
+<link href="static/css/animate-custom.css" rel="stylesheet"> 
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="static/js/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<html>
+    <head>
+        <title>Route Details</title>
+        <meta name="viewport"
+         content="width=device-width, initial-scale=1">
+        <!-- moved to styles.css
+        <style>
+        .center-fit {
+            max-width: 100%;
+            max-height: 80vh;
+            margin: auto;
+        }
+        
+        .image {
+             height: 100%;
+             position: relative;
+             border-style: solid;
+             background-repeat: no-repeat;
+            /* height: 800px;
+            width: 600px; */
+            }
+        </style>
+        -->
+        
+        <!-- TESTING - need to finalize before adding to styles.css -->
+        <!-- <style>
+            .hold {
+                border-style: solid;
+                width: 4%;
+                height: 3%;
+                border-radius: 25px;
+                text-align: center;
+                position: absolute;
+                top: 25%;
+                left: 25%;
+            }
+            .frame {
+                position: relative;
+            }
+        </style> -->
+        <style>
+            .in_route {
+                visibility: visible;
+                box-shadow:0 0 10px;
+            }
+            .not_in_route {
+                visibility: hidden;
+                background-color: lightgray;
+            }
+            #placeholder {
+                position: absolute;
+                top: 25%;
+                left: 18%;
+            }
+        </style>
+    </head>
+    {% include 'navbar.html' %}
+    {% include 'flash.html' %}
+    <body>
+        <div class="centered">
+            <h1>{{name}} Details</h1>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class = "centered">
+                            <!-- Bootstrap way of depicting image with caption -->
+                            <figure class="figure">
+                                <div class="frame" id="frame">
+                                </div>
+                                <!-- <figcaption class="figure-caption">Holds on the wall for the {{name}}.</figcaption> -->
+                            </figure>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" id="route_only">Show Only Route Holds</button>
+                                <button type="button" class="btn btn-primary" id="section_all">Show All Holds</button>
+                            </div>
+                            <!-- <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="btnradio" id="route_only" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="route_only">Show Only Route Holds</label>
+                              
+                                <input type="radio" class="btn-check" name="btnradio" id="section_all" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="section_all">Show All Holds</label>
+                            </div> -->
+                        </div>
+                    </div>
+                    <!-- Route info to the right of the image -->
+                    <div class="col-sm-6" style = "position: absolute; top: 50%; left: 50%; margin-right: -50%;">
+                        <p style = "align-items: center; ">
+                            Grade: {{'%s' % (grade_str)}} <br>
+                            Tape Color: {{'%s' % (tape_col)}} <br>
+                            Rope: {{'%d' % (rope)}} <br>
+                            Status: {{'%s' % (status)}} <br>
+                            Date Created: {{'%s' % (date)}} <br>
+                            Description: {{'%s' % (descrip)}} <br>
+                        </p>
+                    {% if current_user.is_authenticated %}
+                        {% if not alreadyFav %}
+                        <a href="/favorites?route_id={{routeid}}&add_route=True">
+                            <button type="button" class="btn btn-success">Add to Favorites</button>
+                        </a><br>
+                        {% else %}
+                        <a href="/favorites?route_id={{routeid}}&add_route=False">
+                            <button type="button" class="btn btn-danger">Remove from Favorites</button>
+                        </a><br>
+                        {% endif %}
+                    {% endif %}
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <!-- COMMENT SECTION -->
+        <hr>
+        {% if current_user.is_authenticated %}
+        <div class="container">
+            <div class="form-group">
+            <h4>Leave a comment on this route!</h4>
+            <textarea class="form-control" rows="5" id="comment"></textarea>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="public">
+                <label class="form-check-label" for="flexCheckDefault">Private?
+                </label>
+                <button type="button" id = "commentbtn"
+                style="float: right;" class="btn btn-primary">COMMENT</button>
+            </div>
+            <hr>
+            <h1 class = "centered">Comment Section</h1>
+            <label for="mine"> Filter:</label>
+            <div class="dropdown">
+                <select id = "mine" name="mine">
+                    <option value="0">All Comments</option>
+                    <option value="1">My Comments</option>
+                </select><br>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-8 col-md-12">           
+                    <div class="comments-list" id = "commentarea">
+                        <!-- Populated by AJAX request -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <h4 class = "centered">Sign in to comment and view comments on this route!</h4>
+        {% endif %}
+        
+        <div id="route_id" class="invisible">{{routeid}}</div>
+        <div id="tape_col" class="invisible">{{tape_col}}</div>
+
+        <script>
+            let request = null;
+
+            function apply_tape_col(tape_col)
+            {
+                $('.in_route').css({'box-shadow': "0 0 10px #"+tape_col,
+                                    'background-color': '#'+tape_col});
+            }
+            
+            // send get request on submit button, may change to SPA
+            let requestSubmit = null
+            function submitButton() {
+                let route_id = '{{ routeid }}'
+                let comment = $('#comment').val()
+                let public = 0
+
+                if($("#public").is(':checked'))
+                    public = 1  // checked
+                else
+                    public = 0  // unchecked
+
+                route_id = encodeURIComponent(route_id)
+                comment = encodeURIComponent(comment)
+
+                let url = '/submitcomment?route_id=' + route_id
+                + '&comment=' + comment +'&public=' + public
+
+                if (requestSubmit != null)
+                    requestSubmit.abort();
+
+                request = $.ajax({
+                type:'GET',
+                url: url,
+                success: displayComments
+                });
+                $('#comment').val('');
+            }
+
+            function disp_only_route()
+            {
+                $('.not_in_route').css({"visibility": "hidden"});
+            }
+
+            function disp_collection()
+            {
+                $('.not_in_route').css({"visibility": "visible"});
+            }
+
+            function handleResponse(response)
+            {
+                let section = response['section'];
+                let route_holds = response['route_holds'];
+                let section_holds = response['section_holds'];
+                let tape_col = response['tape_col'];
+
+                // $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+                if (section == null)
+                {
+                    $('#frame').append('<div class="centered">')
+                    $('#frame').append('<img src="static/img/'+ 'white' + '.png" class="center-fit">')
+                }
+                else
+                {
+                    $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+                }
+
+                section_holds.forEach(hold => {
+                    console.log(hold[0] + ',' + hold[1]);
+                    if (route_holds.includes(hold[2])) {
+                        $('#frame').append('<div class="hold in_route" id="' + hold[2]
+                            + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                    }
+                    else {
+                        $('#frame').append('<div class="hold not_in_route" id="' + hold[0]
+                            + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                    }
+                });
+
+                // let tape_col = 'orchid';
+                // $('.in_route').css({'box-shadow': "0 0 10px "+tape_col,
+                //                     'background-color': tape_col});
+                apply_tape_col(tape_col);
+            }
+
+            function getData(route_id)
+            {
+                console.log('route_id');
+                let url = '/routeimage' + '?route_id=' + String(route_id);
+
+                if (request != null)
+                    request.abort();
+
+                request = $.ajax({
+                    type:'GET',
+                    url: url,
+                    dataType: 'json',
+                    success: handleResponse
+                });
+            }
+
+            // comment related AJAX
+            function handleComments(response) {
+                $('#commentarea').html(response);
+            }
+
+            let requestComm = null;
+
+            function displayComments() {
+                let mine = $('#mine :selected').val()
+                let url = '/displaycomments?route_id=' + '{{ routeid }}'
+                + '&mine=' + mine
+
+                if (requestComm != null)
+                    requestComm.abort();
+                
+                requestComm = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    success: handleComments
+                });
+            }
+
+            function setup()
+            {
+                $('#commentbtn').click(submitButton)
+                $('#mine').on('change', displayComments);
+                displayComments()
+                getData($('#route_id').text());
+                $('#route_only').on('click', disp_only_route);
+                $('#section_all').on('click', disp_collection);
+                console.log($("#frame")[0].outerHTML);
+            }
+
+            $('document').ready(setup)
+        </script>
+    </body>
+</html>

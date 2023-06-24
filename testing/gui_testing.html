@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<!-- =============================================================== -->
+<!-- gui_testing.html                                                      -->
+<!-- Author: John Hart and Hitesha Ukey                             -->
+<!-- =============================================================== -->
+
+<html>
+    <head>
+        <title>Testing Draggable Stuff</title>
+        <style>
+            .image {
+                position: relative;
+                border-style: solid;
+                background-image: url('/landscape.jpg');
+                width: 800px;
+                height: 600px;
+            }
+            .dragitem {
+                border-style: solid;
+                text-align: center;
+                width: 75px;
+                height: 75px;
+                width: 150px;
+                height: 150px;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+            }
+        </style>
+    </head>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+$(function(){
+    $('#dragitem').draggable(
+    {
+        containment: "#image",
+        drag: function() {
+            var offset = $(this).position();
+        drag: function() {
+            var offset = $(this).position();
+            var xPos = offset.left;
+            var yPos = offset.top;
+            $('#posX').text('x: ' + xPos);
+            $('#posY').text('y: ' + yPos);
+        }
+    });
+});
+</script>
+<body>
+    <h1>This will be an image!</h1>
+    <div id="image" class="image">
+        <div id="dragitem" class="dragitem">
+            <ul>
+                <li id="posX"></li>
+                <li id="posY"></li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

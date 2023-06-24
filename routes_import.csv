@@ -1,0 +1,46 @@
+route_id,name,grade,consensus_grade,tape_col,tape_col2,date_created,descrip,status,rope,route_type
+0,Hint of Whine,12,12,White,None,4/5/19,Not yet available.,Up,6,Rope
+1,A Match Made in Hell,12,12,Brown,None,2/23/20,Not yet available.,Up,9,Rope
+2,It's Not a Bug...,12,12,Orange,None,2/15/20,Not yet available.,Up,10,Rope
+3,It's a Feature,12,12,Orange,None,2/15/20,Not yet available.,Up,10,Rope
+4,One Last Time,11,11,Teal,None,5/30/19,Not yet available.,Up,1,Rope
+5,Twilight Zone,11,11,Purple,None,9/29/21,Not yet available.,Up,5,Rope
+6,Orb-Weaver,11,11,Purple,None,1/16/20,Not yet available.,Up,7,Rope
+7,Blood ritual,11,11,Red,None,11/19/21,Not yet available.,Up,7,Rope
+8,Now You're Thinking W/ Features,11,11,Pink,None,11/12/21,Not yet available.,Up,8,Rope
+9,Domesticated Retina,11,11,Brown,None,9/27/21,Not yet available.,Up,10,Rope
+10,Turtle Sunrise,10,10,Pink,None,1/29/22,Not yet available.,Up,2,Rope
+11,Get Out Me Swamp! ,10,10,Green,None,10/9/21,Not yet available.,Up,3,Rope
+12,UH OH... ,10,10,Orange,None,11/12/21,Not yet available.,Up,4,Rope
+13,Captain Hook,10,10,Black,None,11/17/19,Not yet available.,Up,6,Rope
+14,A Dream of Spring,10,10,Lime Green,None,3/31/19,Not yet available.,Up,9,Rope
+15,I Broke The Storage Key :(,5,5,Yellow,None,12/15/21,Not yet available.,Up,3,Rope
+16,Summer Lime,10,10,Lime Green,None,9/9/19,Not yet available.,Up,13,Rope
+17,The Sky is Black,9,9,Black,None,10/30/21,Not yet available.,Up,4,Rope
+18,Esquire! My Brown Pants!,9,9,Brown,None,10/8/21,Not yet available.,Up,7,Rope
+19,As You Winch,9,9,Red,None,12/14/21,Not yet available.,Up,9,Rope
+20,Time of the Season,9,9,Purple,None,11/15/19,Not yet available.,Up,10,Rope
+21,Bluephoria ,9,9,Blue,None,11/5/21,Not yet available.,Up,10,Rope
+22,I ♥ The Gunks,9,9,Red,None,10/9/21,Not yet available.,Up,12,Rope
+23,Duck Eggs,9,9,Purple,None,12/15/21,Not yet available.,Up,13,Rope
+24,Take On Me,8,8,Green,None,12/7/21,Not yet available.,Up,1,Rope
+25,Trash Panda ,8,8,Lime Green,None,10/8/21,Not yet available.,Up,3,Rope
+26,Under the Sea,8,8,Teal,None,1/23/22,Not yet available.,Up,3,Rope
+27,Strawberry Fields,8,8,Pink,None,2/16/19,Not yet available.,Up,4,Rope
+28,Social Distancing,8,8,Teal,None,9/26/21,Not yet available.,Up,6,Rope
+29,Safe Crackin',8,8,Lime Green,None,3/9/20,Not yet available.,Up,7,Rope
+30,Lakeshore Craggin',8,8,Teal,None,9/19/21,Not yet available.,Up,8,Rope
+31,The Handing Down,8,8,Lime Green,None,9/3/21,Not yet available.,Up,11,Rope
+32,(Send),8,8,White,None,2/22/20,Not yet available.,Up,12,Rope
+33,Tamarack,7,7,Brown,None,,Not yet available.,Up,5,Rope
+34,Rock Lesnar,7,7,Yellow,None,11/3/21,Not yet available.,Up,7,Rope
+35,The playlist isn't even long enough for a full practice yet,7,7,Orange,None,10/9/21,Not yet available.,Up,8,Rope
+36,Superfragi-CRAG-ilisticexpialidocious,7,7,Green,None,12/15/21,Not yet available.,Up,12,Rope
+37,Elon's Musk,7,7,Teal,None,9/14/19,Not yet available.,Up,13,Rope
+38,Grindset,6,6,Red,None,9/19/21,Not yet available.,Up,1,Rope
+39,Eiffel Tower,6,6,Blue,None,3/31/19,Not yet available.,Up,2,Rope
+40,Hexagons are the Bestagons,6,6,Blue,None,9/19/21,Not yet available.,Up,5,Rope
+41,Leila's Landing,6,6,Orange,None,1/30/22,Not yet available.,Up,6,Rope
+42,Nostalgia Trippin',6,6,Blue,None,9/26/21,Not yet available.,Up,8,Rope
+43,Women in STEM,6,6,Pink,None,11/19/21,Not yet available.,Up,9,Rope
+44,Tasteful Sidewall,5,5,Brown,None,11/5/21,Not yet available.,Up,2,Rope

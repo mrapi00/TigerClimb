@@ -1,0 +1,529 @@
+<!-- An interface page for admins to edit an existing route -->
+
+<!DOCTYPE html>
+
+{% include 'imports.html' %}
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+
+<html>
+    <head>
+        <title>Admin Add</title>
+        <style>
+          .in_route {
+              border-style: solid;
+          }
+          .not_in_route {
+              background-color: lightgray;
+          }
+          .fixed {
+              border-style: dashed;
+          }
+          .draggable {
+              border-style: solid;
+          }
+         .bar {
+             position: relative;
+             background-color: lightgray;
+         }
+         #placeholder {
+                position: absolute;
+                top: 25%;
+                left: 18%;
+            }
+        </style>
+    </head>
+    {% include 'navbar.html' %}
+    {% include 'flash.html' %}
+    
+    <body>
+        <div class="centered">
+        <h1>Add New Route</h1>
+
+          <div class="container-fluid">
+            <div class="row">
+
+              <div class="col-sm-3">
+                <div class="centered">
+                  <form>
+                    <div class="form-group">
+                      <label for="tape_col"> Tape Color</label>
+                      <select class="custom-select" id="tape_col">
+                        <option value="">Choose a Tape Color</option>
+                        <option value="800080">Purple</option>
+                        <option value="EE5CA5">Pink</option>
+                        <option value="E71616">Red</option>
+                        <option value="FF8C00" >Orange</option>
+                        <option value="FFD700">Yellow</option>
+                        <option value="32CD32">Lime Green</option>
+                        <option value="2A9D8F">Teal</option>
+                        <option value="1E67DC">Blue</option>
+                        <option value="238E23" >Green</option>
+                        <option value="8B4513">Brown</option>
+                        <option value="000000">Black</option>
+                        <option value="F5F5F5">White</option>
+                      
+                      </select><br>
+                    </div>
+                    <!-- <div class="form-group">
+                      <label>Section</label>
+                      <input type="text" class="form-control" id="section" value="not available" readonly>
+                      </select>
+                    </div> -->
+                    <div class="form-group" id="section_input">
+                      <label>Section</label>
+                    </div>
+                  </form>
+                  <br>
+                  <h3>How to Map Holds:</h3>
+                  <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">"Add" Holds Mode</h5>
+                      </div>
+                      <p class="mb-1">Double click to add new holds.<br>Click any hold to include or exclude it from the route.</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">"Delete" Holds Mode</h5>
+                      </div>
+                      <p class="mb-1">Double click any hold to remove it permanently from this section.</p>
+                    </a>
+                  </div>
+
+                  <br>
+                  <h5>Switch Editing Mode</h4>
+
+                  <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="btnradio1">Add</label>
+                  
+                    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio2">Delete</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-5">
+                  <div class = "centered">
+                    <figure class="figure">
+                      <div class="frame" id="frame">
+                        <div id="frame_existing"></div>
+                        <div id="frame_new"></div>
+                      </div>
+                  </figure>
+                  </div>
+              </div>
+
+              <!-- Pre-fill with already existing route info, then admin changes as needed -->
+              <div class="col-sm-4" >
+                  <form>
+                    <div class="form-group">
+                      <label for="name">Route Name</label>
+                      <input type="text" class="form-control" id = "name">
+                    </div>
+                    <div class="form-group">
+                      <label for="grade">Grade</label>
+                      <svg xmlns="https://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-square-fill text-primary" viewBox="0 0 16 20" data-toggle="tooltip" title="Grade must start with '5.'" data-placement="bottom">
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                        </svg>
+                      <input type="text" class="form-control" id = "grade" value = "5.">
+                    </div>
+                    <div class="form-group">
+                      <label for="rope">Rope</label>
+                      <svg xmlns="https://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-square-fill text-primary" viewBox="0 0 16 20" data-toggle="tooltip" title="Must be between 1 and 13." data-placement="bottom">
+                        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                        </svg>
+                      <input type="number" class="form-control" min="1" max="13" id="rope" >
+                    </div>
+                    <div class="form-group">
+                      <label for="status"> Status</label>
+                      <select class="form-control custom-select" id="status">
+                          <option value="Up">Up</option>
+                          <option value="Down">Down</option>
+                          <option value="In-Progress">In-Progress</option>
+                      </select><br>
+                    </div>
+                        <div class="form-group">
+                          <label for="date">Date Created</label>
+                          <input type="date" class="form-control" id="date" value="">
+                        </div>
+                        <div class="form-group">
+                          <label for="descrip">Description</label>
+                          <textarea class="form-control" id="descrip" rows="3" >No description.</textarea>
+                        </div>
+                        
+                        <input class="btn btn-primary" value="Add Route" id="submit" readonly>
+                    </form>
+                    <br>
+              </div> 
+            </div>
+          </div>
+        </div>
+        <script>
+        // add the real js code here
+
+        // applies tape color to holds, filling in with that color
+        function apply_tape_col()
+          {
+            let tape_col = $('#tape_col').val();
+            $('.in_route').css({'box-shadow': "0 0 10px #"+tape_col,
+                                'background-color': '#'+tape_col});
+          }
+
+        // applies or removes HTML classes
+        function add_to_route(hold_id)
+          {
+            $('#'+hold_id).removeClass('not_in_route');
+            $('#'+hold_id).addClass('in_route');
+
+            apply_tape_col();
+          }
+
+          function remove_from_route(hold_id)
+          {
+            $('#'+hold_id).removeClass('in_route');
+            $('#'+hold_id).addClass('not_in_route');
+
+            $('.not_in_route').css({'box-shadow': "0 0 0px",
+                                'background-color': 'lightgray'});
+          }
+
+          // for toggling between putting a generic sectional hold, or in-route hold
+          function switch_inclusion(hold_id)
+          {
+            if ($('#'+hold_id).hasClass('in_route'))
+            {
+              remove_from_route(hold_id);
+            }
+            else if ($('#'+hold_id).hasClass('not_in_route'))
+            {
+              add_to_route(hold_id);
+            }
+          }
+
+          // use jQuery and jQUery UI for adding hold mechanism
+          var num_new = 0;
+          function add_hold(e)
+          {
+            num_new += 1;
+
+            let framex = $('#frame').offset().left;
+            let framey = $('#frame').offset().top;
+            let width = $('#frame').width()
+            let height = $('#frame').height()
+            let x = e.pageX;
+            let y = e.pageY;
+
+            let x_percent = ((x-framex)/width*100).toFixed(4)-1.3;
+            let y_percent = ((y-framey)/height*100).toFixed(4)-0.975;
+            // console.log(x_percent, y_percent)
+
+            // assign new html id per new hold wrapped inside a div
+            let new_id = 'new_' + String(num_new);
+            $('#frame_new').append('<div class="hold new in_route" id="' + new_id + '"></div>');
+            $('#' + new_id).css({ left: String(x_percent)+'%', top: String(y_percent)+'%'});
+            $('#' + new_id).draggable({
+                containment:"#frame",
+                stop: function() {
+                x = $('#' + new_id).position().left;
+                y = $('#' + new_id).position().top;
+
+                let x_percent = (x/width*100).toFixed(4);
+                let y_percent = (y/height*100).toFixed(4);
+                $('#' + new_id).css({ left: String(x_percent)+'%', top: String(y_percent)+'%'});
+                }
+            });
+            $('#' + new_id).on('click', function() {switch_inclusion(new_id);});
+            // console.log('created hold');
+
+            apply_tape_col();
+          }
+
+          // functionality when on add mode (default)
+          var delete_holds_mode = false;
+          function add_mode() 
+          {
+            delete_holds_mode = false;
+            $('#frame').on('dblclick', function(e){add_hold(e)});
+
+            let new_holds = $('#frame_new').children();
+            for(let i = 0; i < new_holds.length; i++)
+            {
+              let child = new_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).off('dblclick');
+              $('#'+key).on('click', function() {switch_inclusion(key)});
+              $('#'+key).draggable('enable');
+              console.log(key);
+            }
+            let old_holds = $('#frame_existing').children();
+            for(let i = 0; i < old_holds.length; i++)
+            {
+              let child = old_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).off('dblclick');
+              $('#'+key).on('click', function() {switch_inclusion(key)});
+              console.log(key);
+            }
+          }
+
+          var deleted = [];
+          // functionality when on delete mode
+          function delete_hold(hold_id)
+          {
+            if ($('#'+hold_id).hasClass('fixed'))
+            {
+              deleted.push(hold_id);
+            }
+            $('#'+hold_id).remove();
+          }
+
+          function delete_mode()
+          {
+            delete_holds_mode = true;
+            $('#frame').off('dblclick');
+
+            let new_holds = $('#frame_new').children();
+            for(let i = 0; i < new_holds.length; i++)
+            {
+              let child = new_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).draggable('disable');
+              $('#'+key).off('click');
+              $('#'+key).on('dblclick', function() {delete_hold(key)});
+              console.log(key);
+            }
+            let old_holds = $('#frame_existing').children();
+            for(let i = 0; i < old_holds.length; i++)
+            {
+              let child = old_holds.eq(i);
+              let key = child.attr('id');
+              $('#'+key).off('click');
+              $('#'+key).on('dblclick', function() {delete_hold(key)});
+              console.log(key);
+            }
+          }
+          
+        // re-route to admin edit page for additional editing
+        function handleResponse(response)
+        {
+          if (response == 'refresh')
+          {
+            window.location.reload();
+          }
+          else
+          {
+            window.location.href = "/admin_edit?route_id="+String(response);
+          }
+        }
+
+        var request = null;
+        // on submit, send data back to flask server using JSON
+        function send_data() 
+        {
+          var json = {};
+
+          json['name'] = $('#name').val();
+          json['grade'] = $('#grade').val();
+          json['tape_col'] = $('#tape_col :selected').text();
+          json['rope'] = $('#rope').val();
+          json['status'] = $('#status').val();
+          json['date'] = $('#date').val();
+          json['descrip'] = $('#descrip').val();
+
+          json['section'] = $('#section').val();
+
+          let width = $('#frame').width()
+          let height = $('#frame').height()
+
+          let new_holds = $('#frame_new').children();
+          var new_coords = [];
+          for(let i = 0; i < new_holds.length; i++)
+          {
+              let child = new_holds.eq(i);
+              let id = child.attr('id');
+
+              let x = (child.position().left/width * 100).toFixed(4);
+              let y = (child.position().top/height * 100).toFixed(4);
+
+              if ($('#'+id).hasClass('in_route'))
+              {
+                var inclusion = true;
+              }
+              else if ($('#'+id).hasClass('not_in_route'))
+              {
+                var inclusion = false;
+              }
+              // internal test?
+
+              const coord = [x, y, inclusion];
+              console.log(coord);
+              new_coords.push(coord);
+          }
+          json['new_coords'] = new_coords;
+
+          let old_holds = $('#frame_existing').children();
+          var old_coords = [];
+          for(let i = 0; i < old_holds.length; i++)
+          {
+              let child = old_holds.eq(i);
+              let id = child.attr('id');
+
+              if ($('#'+id).hasClass('in_route'))
+              {
+                var inclusion = true;
+              }
+              else if ($('#'+id).hasClass('not_in_route'))
+              {
+                var inclusion = false;
+              }
+              // internal test?
+            
+              const coord = [id, inclusion];
+              old_coords.push(coord);
+          }
+          json['old_ids'] = old_coords;
+
+          json['deleted'] = deleted;
+          
+          let url = '/submitadd'
+          
+          if (request != null)
+              request.abort();
+
+          request = $.ajax(
+              {
+                  type: 'POST',
+                  url: url,
+                  data: JSON.stringify(json),
+                  contentType: 'application/JSON',
+                  success: handleResponse
+              }
+          );
+        }
+
+        // displays correct section image when user chooses
+        function handleNewSection(response)
+        {
+          let section = response['section'];
+          let holds = response['section_holds'];
+
+          $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+
+          holds.forEach(hold => {
+                  // console.log(hold[0] + ',' + hold[1]);
+                  $('#frame_existing').append('<div class="hold not_in_route fixed" id="' + hold[2]
+                      + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                  $('#'+hold[2]).click(function() {switch_inclusion(hold[2])});
+              });
+        }
+
+        let requestNewSection = null;
+
+        function getNewData(section)
+        {
+          let url = '/adminnewimage?section=' + section;
+
+          if (requestNewSection != null)
+                    requestNewSection.abort();
+                
+                requestNewSection = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    dataType: 'json',
+                    success: handleNewSection
+                });
+        }
+
+        // creates drop down for section input
+        function setupImage() 
+        {
+          $('#frame').append('<br><br><p>Route is not mapped to the wall yet.');
+          $('#frame').append('Choose a section to start mapping holds.</p>');
+          $('#section_input').append(`<select class="custom-select" id="section">
+                                      <option value="default" selected>Choose section</option>
+                                      <option value="the_roof">The Roof</option>
+                                      <option value="main_wall">Main Wall</option>
+                                      <option value="left_wall">Left Wall</option>
+                                      <option value="right_crack">Right Crack</option>
+                                      <option value="desk_wall">Desk Wall</option>
+                                      </select>`);
+          $('#section').on('change', function(){
+            console.log('section change');
+            $('#frame').empty();
+            $('#frame').append('<div id="frame_existing"></div><div id="frame_new"></div>');
+            let section = $('#section').val();
+            getNewData(section);
+          });
+
+          $('#tape_col').on('change', apply_tape_col);
+        }
+
+        // this function makes grade field in form locked to start '5.' and number only
+        function makeGradeRobust() {
+          input = $('#grade')[0]
+          var readOnlyLength = input.value.length;
+          grade.addEventListener('keydown', function(event) {
+            var which = event.which;
+            if (((which == 8) && (input.selectionStart <= readOnlyLength)) ||
+              ((which == 46) && (input.selectionStart < readOnlyLength))) {
+              event.preventDefault();
+            }
+          });
+          grade.addEventListener('keypress', function(event) {
+            var which = event.which;
+            if ((event.which != 0) && (input.selectionStart < readOnlyLength)) {
+              event.preventDefault();
+              }
+          });
+
+          $("input[id*='grade']").keydown(function (event) {
+          // if (event.shiftKey == true) {
+          //     event.preventDefault();
+          // }
+
+          if ((event.keyCode >= 48 && event.keyCode <= 57) || // allows 0 - 9
+              (event.keyCode >= 96 && event.keyCode <= 105) || // numpad 0 - 9
+              (event.shiftKey && event.keyCode == 187) || // for '+' char
+              (!event.shiftKey && event.keyCode == 189) || // for '-' char
+              // miscelleanous characters which are valid
+              event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 37 ||
+              event.keyCode == 39 || event.keyCode == 46 || event.keyCode == 190) {
+
+          } else {
+              event.preventDefault();
+            }
+          });
+        }
+
+        // ensure that rope number always between 1 and 13
+        function makeRopeRobust() {
+            var n = $('#rope').val();
+            if (n < 0)
+              $('#rope').val(1);
+            if (n > 13)
+              $('#rope').val(13);
+        }
+
+        function setup() 
+        {
+          setupImage();
+          $('#submit').on('click', send_data);
+          makeGradeRobust();
+          $('#rope').on('input', makeRopeRobust);
+          $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+            });
+
+          add_mode();
+          $('#btnradio1').on('click', add_mode);
+          $('#btnradio2').on('click', delete_mode);
+        }
+          
+
+        $('document').ready(setup);
+        </script>
+    </body>
+</html>

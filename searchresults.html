@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+{% include 'imports.html' %}
+
+<html>
+    <head>
+        <title>Search Results</title>
+
+        <style>
+        table thead {
+            position:sticky;
+            top:0;
+            background-color:white;
+        }
+        .image {
+             position: relative;
+             border-style: solid;
+             background-repeat: no-repeat;
+             background-image: url("static/img/left_corner.png");
+             
+             width: 600px;
+             height: 800px;
+         }
+         .box {
+            border-style: solid;
+            width: 50px;
+            height: 50px;
+             border-radius: 25px;
+             text-align: center;
+             position: absolute;
+         }
+        .in_route {
+            visibility: visible;
+        }
+        .not_in_route {
+            visibility: hidden;
+            background-color: lightgray;
+        }
+        </style>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% include 'flash.html' %}
+        <div class="centered">
+            <h1>Search for Routes!</h1>
+        <form action="searchresults" method="get">
+            Route Name:
+            <input id = "Route" type="text" name="route_name" value=""><br><p></p>
+            Min Grade: 5.
+            <input id = "MinGrade" type="text" name="min_grade" style="width: 2em" value="">
+            Max Grade: 5.
+            <input id = "MaxGrade" type="text" name="max_grade" style="width: 2em" value="">
+            Ropes:
+            <input id = "Ropes" type="text" name="rope_list" style="width: 5em" value="">
+            <label for="sortby"> Sort by:</label>
+            <select id = "sortBy" name="sortby">
+                <option value="name">Name</option>
+                <option value="grade">Grade</option>
+                <option value="rope">Rope</option>
+            </select><br>
+            </div>
+        </form><br>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="centered">
+                        <figure class="figure">
+                            <div class="frame" id="frame">
+                            </div>
+                        </figure>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="btnradio" id="route_only" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="route_only">Show Only Route Holds</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="section_all" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="section_all">Show All Holds</label>
+                          </div>
+                    </div>
+                </div>
+                <div class="col-sm-6" style="height:600px; overflow-y:auto">
+                    <table class = "table thread-dark centeredTable" id = "Results">
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+
+        <!--SPA using jQuery and AJAX-->
+        <script>
+        'use strict';
+
+        function apply_tape_col(tape_col)
+        {
+            $('.in_route').css({'box-shadow': "0 0 10px #"+tape_col,
+                                'background-color': '#'+tape_col});
+        }
+
+        var show_all = false;
+
+        function disp_only_route()
+        {
+            show_all = false;
+            $('.not_in_route').css({"visibility": "hidden"});
+        }
+
+        function disp_collection()
+        {
+            show_all = true;
+            $('.not_in_route').css({"visibility": "visible"});
+        }
+
+
+        function handleResponse(response) {
+            $('#Results').html(response);
+            let children = $('#body').children();
+            for (let i = 0; i < children.length; i++)
+            {
+                let child = children[i]
+                let route_id = child.id
+                $('#title_' + route_id).on('mouseenter', function() {getData(route_id);});
+            }
+        }
+
+        let request = null;
+
+        function getResults() 
+        {
+            let route_name = $('#Route').val();
+            let min_grade = $('#MinGrade').val();
+            let max_grade = $('#MaxGrade').val();
+            let rope_list = $('#Ropes').val();
+            let sortby = $('#sortBy :selected').text().toLowerCase();
+
+            route_name = encodeURIComponent(route_name);
+            min_grade = encodeURIComponent(min_grade);
+            max_grade = encodeURIComponent(max_grade);
+            rope_list = encodeURIComponent(rope_list);
+            
+            let url = '/results' + '?route_name=' + route_name + 
+                '&min_grade=' + min_grade + 
+                '&max_grade=' +  max_grade + 
+                '&rope_list=' + rope_list +
+                '&sortby=' + sortby
+
+            if (request != null)
+                request.abort();
+
+            request = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    success: handleResponse
+                });
+        }
+
+        function handleImageResponse(response)
+        {
+            $('#frame').empty();
+
+            let section = response['section'];
+            let route_holds = response['route_holds'];
+            let section_holds = response['section_holds'];
+            let tape_col = response['tape_col'];
+
+            if (section == null)
+            {
+                $('#frame').append('<img src="static/img/'+ 'white' + '.png" class="center-fit">')
+            }
+            else
+            {
+                $('#frame').append('<img src="static/img/'+ section + '.png" class="center-fit">')
+            }
+
+            section_holds.forEach(hold => {
+                console.log(hold[0] + ',' + hold[1]);
+                if (route_holds.includes(hold[2])) {
+                    $('#frame').append('<div class="hold in_route" id="' + hold[2]
+                        + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                }
+                else {
+                    $('#frame').append('<div class="hold not_in_route" id="' + hold[2]
+                        + '" style="left: '+ hold[0] + '%; top:' + hold[1] + '%"></div>');
+                }
+            });
+
+            if (show_all) {
+                disp_collection();
+            }
+
+            apply_tape_col(tape_col);
+        }
+
+        function getData(route_id)
+        {
+            console.log('route_id');
+            let url = '/routeimage' + '?route_id=' + String(route_id);
+
+            if (request != null)
+                request.abort();
+
+            request = $.ajax({
+                type:'GET',
+                url: url,
+                dataType: 'json',
+                success: handleImageResponse
+            });
+        }
+
+        function setup() {
+            $('#Route').on('input', getResults);
+            $('#MinGrade').on('input', getResults);
+            $('#MaxGrade').on('input', getResults);
+            $('#Ropes').on('input', getResults);
+            $('#sortBy').on('change', getResults);
+            getResults();
+            $('#hello').on('mouseover', function() {getData(0);});
+            $('#route_only').on('click', disp_only_route);
+            $('#section_all').on('click', disp_collection);
+            $('#route_only').click();
+        }
+
+        $('document').ready(setup);
+        </script> 
+    </body>
+</html>

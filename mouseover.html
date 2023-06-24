@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Testing Draggable Stuff</title>
+        <style>
+            .image {
+                position: relative;
+                border-style: solid;
+                background-image: url('/landscape.jpg');
+                width: 800px;
+                height: 600px;
+            }
+            .box {
+                border-style: solid;
+                text-align: center;
+                width: 75px;
+                height: 75px;
+                position: absolute;
+            }
+            #hold1 {
+                top: 0px;
+                left: 0px;
+            }
+            #hold2 {
+                top: 0px;
+                left: 0px;
+            }
+            #hold3 {
+                top: 0px;
+                left: 0px;
+            }
+        </style>
+    </head>
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        'use strict';
+
+        function handleResponse(response)
+        {
+            $('#hold1').html(response);
+            $('#hold2').html(response);
+            $('#hold3').html(response);
+        }
+
+        let request = null;
+        function getImage(route_number)
+        {
+            if (route_number == 1)
+            {
+                $('#hold1').css({ left: 500, top: 300})
+                $('#hold2').css({ left: 700, top: 500})
+                $('#hold3').css({ left: 100, top: 400})
+            }
+            if (route_number == 2)
+            {
+                $('#hold2').css({left: 100, top: 400});
+                $('#hold2').css({ left: 200, top: 500})
+                $('#hold3').css({ left: 300, top: 600})
+            }
+            if (route_number == 3)
+            {
+                $('#hold3').css({left: 200, top: 100});
+                $('#hold2').css({ left: 200, top: 300})
+                $('#hold3').css({ left: 200, top: 500})
+            }
+            if (request != null)
+            {
+                request.abort();
+            }
+
+            request = $.ajax(
+                {
+                    type: 'GET',
+                    success: handleResponse
+                }
+            );
+        }
+
+        function setup()
+        {
+            $('#route1_div').on('click', test);
+            $('#route2').on('click', test);
+            $('#route3').on('click', function() {getImage(3);});
+        }
+    </script>
+    <body>
+        <table>
+            <tr>
+                <th scope="col" align="left">Route Name</th>
+            </tr>
+            <tr>
+                <td id="route1" onmouseover='getImage(1)'>Route 1</td>
+            </tr>
+            <tr>
+                <td id="route2" onmouseover='getImage(2)'>Route 2</td>
+            </tr>
+            <tr>
+                <td id="route3" onmouseover='getImage(3)'>Route 3</td>
+            </tr>
+        </table>
+        <div id="route1_div" onmouseover='getImage(1)'>Route 1</div>
+        <div id="image" class="image">
+            <div id="hold1" class="box">
+                <ul>
+                    <li id="posX"></li>
+                    <li id="posY"></li>
+                </ul>
+            </div>
+            <div id="hold2" class="box">
+                <ul>
+                    <li id="posX"></li>
+                    <li id="posY"></li>
+                </ul>
+            </div>
+            <div id="hold3" class="box">
+                <ul>
+                    <li id="posX"></li>
+                    <li id="posY"></li>
+                </ul>
+            </div>
+        </div>
+
+    </body>
+</html>

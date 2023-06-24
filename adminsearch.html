@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% include 'imports.html' %}
+
+<!-- Give admins a simpler search page -->
+<html>
+    <head>
+        <title>Admin {{action}}</title>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        
+        <div class="centered">
+            <h1>Admin: {{action}} Routes</h1>
+        <form method="get">
+            Route Name:
+            <input id = "Route" type="text" name="route_name" value=""><br><p></p>
+            </div>
+        </form><br>
+        </div>
+        <div class = container-fluid>
+            <div class="row justify-content-center">
+                <div class="col-auto">
+            <table class="table thread-dark centeredTable" id = "Results">
+                
+            </table>
+        </div>
+    </div>
+        </div>
+        
+
+        <!--SPA using jQuery and AJAX-->
+        <script>
+        'use strict';
+        function handleResponse(response) {
+            $('#Results').html(response);
+        }
+
+        let request = null;
+
+        function getResults() 
+        {
+            let route_name = $('#Route').val();
+
+        route_name = encodeURIComponent(route_name);
+        
+        let url = '/{{search}}' + '?route_name=' + route_name
+
+            if (request != null)
+                request.abort();
+
+            request = $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    success: handleResponse
+                });
+        }
+
+        function setup() 
+        {
+            $('#Route').on('input', getResults);
+            getResults();
+        }
+        
+        $('document').ready(setup);
+        </script> 
+    </body>
+</html>

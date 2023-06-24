@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% include 'imports.html' %}
+
+<!-- Give admins a simpler search page -->
+<html>
+    <head>
+        <title>Admin Edit Holds</title>
+    </head>
+    <body>
+        {% include 'navbar.html' %}
+        {% include 'flash.html' %}
+        <div class="centered">
+            <h1>Admin: Edit Holds on Section</h1>
+            <!-- Ask Hitesha: should this be a SPA where you get the image corresponding to section?-->
+            <form method="post">
+                <div class="centered">
+                    <label for="status"> Pick a Section</label>
+                    <!-- Feed this input into a JSON for a POST request-->
+                    <select class="form-control col-2" style="margin-left:42%;" id="section">
+                        <option value="1">Section 1</option>
+                        <option value="2">Section 2</option>
+                        <option value="3">Section 3</option>
+                        <option value="4">Section 4</option>
+                        <option value="5">Section 5</option>
+                    </select><br>
+                  </div>
+            </form><br>
+        </div>
+
+    </body>
+</html>
